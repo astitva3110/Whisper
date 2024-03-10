@@ -1,6 +1,6 @@
 const express=require('express');
 const helmet=require('helmet');
-
+const cookieParser = require('cookie-parser');
 const app=express();
 
 const connectdb=require('./util/database');
@@ -13,6 +13,7 @@ const post=require('./routes/post');
 
 connectdb();
 app.use(express.json());
+app.use(cookieParser());
 app.use(auth);
 app.use(user);
 app.use(post);

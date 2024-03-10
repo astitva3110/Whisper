@@ -1,22 +1,21 @@
 const express=require('express');
 const router=express.Router();
 const usercontroller=require('../controller/usercontroller');
+const verifyToken=require('../middleware/verify');
 
-router.post('/:user_id',usercontroller.getuser);
+//route for get the user
+router.get('/:user_id',usercontroller.getuser);
 
+//route for update the user model
 router.put('/update/:user_id',usercontroller.updateUserData)
 
+//route to follow the user
 router.post('/follow/:user_id',usercontroller.follow);
 
-router.get('/unfollow/:user_id',usercontroller.getUnfollow);
-
+//route to unfollow the user
 router.post('/unfollow/:user_id',usercontroller.postUnfollow);
 
-
-// router.delete('/delete/:user_id',usercontroller.postDelete);
-
-router.get('/search/:query',usercontroller.getSearch);
-
-// router.post('/search/:query',usercontroller.postSearch);
+// route to get the search result
+router.get('/search/:query',verifyToken,usercontroller.getSearch);
 
 module.exports=router;

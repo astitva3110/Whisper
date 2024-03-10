@@ -1,6 +1,9 @@
 const express=require('express');
 const User=require('../model/user');
 
+
+//get user info
+
 exports.getuser=async(req,res)=>{
     const userId=req.params;
     try{
@@ -14,9 +17,9 @@ exports.getuser=async(req,res)=>{
       console.error(err);
 
     }
-  
-
 }
+
+//code to update the user data
 
 exports.updateUserData=async(req,res)=>{
     const userId=req.params;
@@ -34,6 +37,8 @@ exports.updateUserData=async(req,res)=>{
        console.error(err);
    }
 } 
+
+//code to follow the user
 
 exports.follow=async(req,res)=>{
    const currentUser=req.params.user_id;
@@ -64,9 +69,9 @@ exports.follow=async(req,res)=>{
    }
 }
 
-exports.getUnfollow=async(req,res)=>{
-    res.status(200).json("user on the page to unfollow")
-}
+
+
+//code to unfollow the user
 
 exports.postUnfollow = async (req, res) => {
     const currentUser = req.params.user_id;
@@ -98,29 +103,14 @@ exports.postUnfollow = async (req, res) => {
     } catch (err) {
         console.error(err);
 
-        return res.status(500).json({ message: "Internal server error" });
+        return res.status(500).json({ message: "internal server error" });
     }
 };
 
 
-// exports.postDelete=async(req,res)=>{
-//    const user_id=req.params.user_id;
 
-//   try{
-//     const user=await User.findById(user_id);
+//code for searching of user
 
-//     if(!user){
-//      res.status(404).json({message:"User is not found"});
-//     }
-//     await User.deleteOne(user)
-   
-//   }
-//   catch(err){
-//     console.error(err);
-//     res.status(500).json({message:"Internal Server Error"});
-//    }
-
-// }
 
 exports.getSearch=async(req,res)=>{
     const {query}=req.params;
@@ -130,7 +120,8 @@ exports.getSearch=async(req,res)=>{
     }
     catch(err){
             console.error(err);
-            res.status(500).json({message:"Internal Server Error"});
+            res.status(500).json({message:"internal server error"});
            }
    
 }
+

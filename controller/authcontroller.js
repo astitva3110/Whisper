@@ -10,15 +10,7 @@ connectdb()
 
 
 
-
-
-
-exports.getLogin=(req,res)=>{
-    res.status(200).json({message:'login page'})
-}
-
-
-
+///post request for login page
 exports.postLogin=async(req,res)=>{
     const user=await User.findOne({email:req.body.email});
     if(user){
@@ -37,10 +29,8 @@ exports.postLogin=async(req,res)=>{
     }
 }
 
-exports.getLogout=async(req,res)=>{
-    res.status(200).send('your on logout page')
-}
 
+//// post request for logout the user 
 exports.postLogout=async(req,res)=>{
     try{
         res.clearCookie(token,{sameSite:"none",secure:true}).status(200).json({message:'user is logout'});
@@ -52,14 +42,7 @@ exports.postLogout=async(req,res)=>{
 
 
 
-exports.getSignup=async(req,res)=>{
-    res.status(200).json({message:'signup page'});
-}
-
-
-
-
-
+///post request for Signup
 exports.postSignup=async(req,res)=>{
     try{
         const salt=await bcrypt.genSalt(10);

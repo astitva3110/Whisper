@@ -2,16 +2,13 @@ const express=require('express');
 const router=express.Router();
 const authcontroller=require('../controller/authcontroller');
 
-router.get('/signup',authcontroller.getSignup);
-
+//route for register
 router.post('/signup',authcontroller.postSignup);
 
-router.get('/login',authcontroller.getLogin);
-
+//route for login
 router.post('/login',authcontroller.postLogin);
 
-router.get('/logout',authcontroller.getLogout);
-
+//route for logout
 router.post('/logout',authcontroller.postLogout);
 
 module.exports=router;

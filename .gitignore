@@ -5,3 +5,5 @@ model/comment.js
 model/message.js
 model/Story.js
 /node_modules/
+controller/commentcontroller
+routes/commit

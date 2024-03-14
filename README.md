@@ -90,7 +90,7 @@ Output
 - User deletion functionality is implemented.
 - User search capability is available.
 - Users can retrieve recent posts from accounts they follow.
-- Docker containerization is implemented.
+- Docker ,GraphQL containerization is implemented.
 
 
 

@@ -1,5 +1,6 @@
 const express=require('express');
 const User=require('../model/user');
+const generateUsername = require('random-username-generator');
 
 
 //get user info
@@ -125,3 +126,28 @@ exports.getSearch=async(req,res)=>{
    
 }
 
+exports.postappName=async(res,req)=>{
+    const appname=req.body.appName;
+    const userId=req.params.user_id;
+
+    try{
+        const name=await User.findOne({appName:appname})
+        if(!name){
+            res.status(500).json({message:"app name is already taken"})
+        }
+        const user=await User.findById(userId);
+        user.appName=appname;
+        res.status(200).json({appname});        
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message:"internal server error"});
+       }
+}
+
+
+exports.getSuggestion=(req,res)=>{
+    const randomUsername = generateUsername();
+    res.status(200).json({name:randomUsername});
+
+}

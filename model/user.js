@@ -10,6 +10,10 @@ email:{
     type:String,
     required:true
 },
+appName:{
+  type:String,
+  default:""
+},
 password:{
     type:String,
     required:true

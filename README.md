@@ -1,7 +1,7 @@
 
-# Social Media
+# Whisper(Social-media)
 
-A api for Social Media web application
+A api for Social Media web application .It is a website designed to address the reluctance of young people to share their thoughts openly and receive unfiltered feedback and suggestions. On this platform, all users are anonymous, with the option to use unique names suggested by the website. Users can share text-based content while ensuring the security of their information and preventing bullying.
 
 
 
@@ -52,7 +52,7 @@ http://localhost:8080/login
 ```bash
   {
   "email":"abc@gmail.com",
-     "password": "123"
+     "password": "123"git
 }
 ```
 3.Follow(post)
@@ -86,6 +86,7 @@ Output
 ## Features
 
 - The password is protected using bcrypt.
+- User can upload there profile picture
 - User deletion functionality is implemented.
 - User search capability is available.
 - Users can retrieve recent posts from accounts they follow.

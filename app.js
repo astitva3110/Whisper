@@ -29,7 +29,7 @@ async function startApolloServer() {
   server.applyMiddleware({ app });
 
   app.get('/', (req, res) => {
-    res.status(500).send('home page');
+    res.status(200).send('home page');
   });
 
   const PORT = process.env.PORT || 8080;

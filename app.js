@@ -29,12 +29,12 @@ async function startApolloServer() {
   server.applyMiddleware({ app });
 
   app.get('/', (req, res) => {
-    res.status(200).send('home page');
+    res.status(200).send('home page for Social media app');
   });
 
   const PORT = process.env.PORT || 8080;
   app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running `);
   });
 }
 

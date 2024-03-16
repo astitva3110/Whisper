@@ -5,7 +5,7 @@ A api for Social Media web application .It is a website designed to address the 
 
 
 
-
+https://social-media-six-beta.vercel.app/
 ## Installation
 
 Install Authentication Application with npm
@@ -15,6 +15,10 @@ Install Authentication Application with npm
   git clone https://github.com/astitva3110/Social-media.git
 ```
  2.Set-up mongodb in pc 
+
+ ```bash
+ docker pull astitva3110/socialmedia
+```
 
 ## Running Tests
 

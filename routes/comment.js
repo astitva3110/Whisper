@@ -10,16 +10,10 @@ router.post('/addComment/:post_id',isLogin,commentcontroller.addcomment);
 router.post('/addReplies/:comment_id',isLogin,commentcontroller.addReplies);
 
 //router update comment request 
-router.put('/updateComment/:comment_id',isLogin,upadateComment);
-
-//router update replies request
-router.put('/updateComment/:comment_id',isLogin,updateRepiles);
+router.put('/updateComment/:comment_id',isLogin,commentcontroller.upadateComment);
 
 //router delete replies of comment
-router.delete('/deleteComment/:comment_id',isLogin,deleteComment);
-
-//router delete replies of replies
-// router.delete('/deletereplies/:replies',isLogin,deleteReplies);
+router.delete('/deleteComment/:comment_id',isLogin,commentcontroller.deleteComment);
 
 // //router get all the comment of post
 // router.get('/allComment/:post_id',isLogin,getAllComment);

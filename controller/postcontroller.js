@@ -32,7 +32,8 @@ exports.postPOST=async(req,res)=>{
            }
         }
 
-//get the all the post of users which is following by the user
+
+  //get the all the post of users which is following by the user
 
     exports.getAllPost=async(req,res)=>{
        const userId=req.params.user_id;
@@ -56,3 +57,52 @@ exports.postPOST=async(req,res)=>{
         res.status(500).json({message:"Internal Server Error"});
        }
     }
+
+    exports.likePost=async(req,res)=>{
+      const userId=req.body.user_id; 
+      const postId=req.params.post_id;
+      try{
+      const user=await User.findById(userId);
+      const post=await Post.findById(postId);
+     
+    
+    
+      if(!post){
+        res.status(404).json({message:"Post id not found"});
+      }
+       post.likes.push(user._id);
+       await post.save();
+       res.status(200).json({message:"post is liked"});
+      
+      }
+       catch(err){
+                 console.error(err);
+                 res.status(500).json({message:"internal Server Error"});
+                }
+     }
+
+     exports.unlikePost=async(req,res)=>{
+      const userId=req.body.user_id; 
+      const postId=req.params.post_id;
+      try{
+      const user=await User.findById(userId);
+      const post=await Post.findById(postId);
+     
+    
+    
+      if(!post){
+        res.status(404).json({message:"Post id not found"});
+      }
+      if(!post.likes.includes(userId)){
+        res.status(500).json({message:"the is not liked"});
+      }
+       post.likes.pull(post._id);
+       await user.save();
+       res.status(200).json({message:"post  is unliked"});
+      
+      }
+       catch(err){
+                 console.error(err);
+                 res.status(500).json({message:"internal Server Error"});
+                }
+     }

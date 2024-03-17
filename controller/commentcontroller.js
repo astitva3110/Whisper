@@ -7,7 +7,6 @@ const Comment=require('../model/comment');
 exports.addcomment=async(req,res)=>{
     const postId=req.params.post_id;
     const {user_id,text}=req.body;
-    console.log(user_id,text,post_id);
     
     try{
         const post=await Post.findById(postId);
@@ -17,10 +16,10 @@ exports.addcomment=async(req,res)=>{
         const newcomment=new Comment({
             user:user_id,
             text:text,
-            post:post_id
+            post:postId
         })
         await newcomment.save();
-        console.log(newcomment);
+        res.status(200).json({messsge:"Comment is added",newcomment});
     }
     catch(err){
         console.error(err);
@@ -30,19 +29,22 @@ exports.addcomment=async(req,res)=>{
 
 exports.addReplies=async(req,res)=>{
     const commentId=req.params.comment_id;
-    const {userId,text}=req.body;
+    const {user_id,text}=req.body;
+    console.log(req.body)
     try{
         const comment=await Comment.findById(commentId)
-        const user=await User.findById(userId);
+        const user=await User.findById(user_id);
+        console.log(comment,user)
         if(!comment ||!user){
             res.status(404).json({message:"NOT FOUND"});
         }
         const replie={
             text,
-            user:userId
+            user:user_id
         }
         comment.replies.push(replie)
         await comment.save();
+        res.status(200).json({messsge:"Replies is added",replie});
     }
     catch(err){
         console.error(err);
@@ -53,15 +55,15 @@ exports.addReplies=async(req,res)=>{
 
 exports.upadateComment=async(req,res)=>{
     const commentId=req.params.comment_id;
-    const {userId,text}=req.body;
+    const {user_id,text}=req.body;
     try{
-       const user=await User.findById(userId);
+       const user=await User.findById(user_id);
        const comment=await Comment.findById(commentId);
        if(!comment ||!user){
         res.status(404).json({message:"NOT FOUND"});
       }
       const comment_user=comment.user;
-      if(user!=comment_user){
+      if(user_id!=comment_user){
         res.status(500).json({message:"You can't update comment that You don't own!"}); 
       }
       comment.text=text;
@@ -76,17 +78,17 @@ exports.upadateComment=async(req,res)=>{
 
 exports.updateRepiles=async(req,res)=>{
     const commentId=req.params.comment_id;
-    const {userId,text}=req.body;
+    const {user_id,text}=req.body;
     try{
-        const userId=await User.findById(userId);
-        const commentId=await Comment.findById(commentId);
+        const user=await User.findById(user_id);
+        const comment=await Comment.findById(commentId);
         
         const replyIndex=comment.replies.findIndex((reply)=>reply._id.toString()===replyId)
         if(replyIndex===-1){
             throw new CustomError("Reply not found!",404)
         }
 
-        if(comment.replies[replyIndex].user.toString()!==userId){
+        if(comment.replies[replyIndex].user.toString()!==user_id){
             throw new CustomError("You can only update your comments",404)
         }
 
@@ -102,7 +104,7 @@ exports.updateRepiles=async(req,res)=>{
 
 
 exports.deleteComment=async(req,res)=>{
-    const commentId=req.params;
+    const commentId=req.params.comment_id;
     const userId=req.body.user_id;
     const user=await User.findById(userId);
        const comment=await Comment.findById(commentId);
@@ -110,7 +112,7 @@ exports.deleteComment=async(req,res)=>{
         res.status(404).json({message:"NOT FOUND"});
       }
       const comment_user=comment.user;
-      if(user!=comment_user){
+      if(user_id!=comment_user){
         res.status(500).json({message:"You can't update comment that You don't own!"}); 
       }
      await comment.deleteOne();

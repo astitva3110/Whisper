@@ -1,4 +1,5 @@
 const mongoose=require('mongoose');
+const User = require('./user'); 
 
 const commentSchema=new mongoose.Schema({
     user:{
@@ -26,10 +27,14 @@ const commentSchema=new mongoose.Schema({
             required:true
          },
 
-     }]    
+     }],
+     likes:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"user"
+    }],    
 })
 
 
-const Comment=mongoose.model('commentSchema',Comment);
+const Comment=mongoose.model('Comment',commentSchema);
 
 module.exports=Comment;

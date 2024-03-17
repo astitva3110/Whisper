@@ -8,6 +8,7 @@ const connectdb = require('./util/database');
 const auth = require('./routes/auth');
 const user = require('./routes/user');
 const post = require('./routes/post');
+const comment=require('./routes/comment');
 
 const app = express();
 
@@ -18,6 +19,7 @@ async function startApolloServer() {
   app.use(auth);
   app.use(user);
   app.use(post);
+  app.use(comment);
   app.use(helmet());
 
   const server = new ApolloServer({

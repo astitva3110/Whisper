@@ -1,9 +1,6 @@
 .env
 node_modules
 model/chat.js
-model/comment.js
 model/message.js
 model/Story.js
 /node_modules/
-routes/commit.js
-controller/commentcontroller.js

@@ -119,3 +119,69 @@ exports.deleteComment=async(req,res)=>{
      res.status(200).json({message:"Comment deleted successfully!"});
 }
 
+exports.likeComment=async(req,res)=>{
+    const userId=req.body.user_id; 
+    const commentId=req.params.comment_id;
+    try{
+    const user=await User.findById(userId);
+    const comment=await Comment.findById(commentId);
+   
+  
+  
+    if(!comment){
+      res.status(404).json({message:"comment not found"});
+    }
+     comment.likes.push(user._id);
+     await comment.save();
+     res.status(200).json({message:"Comment is liked"});
+    
+    }
+     catch(err){
+               console.error(err);
+               res.status(500).json({message:"internal Server Error"});
+              }
+   }
+   exports.getunlikeComment=async(req,res)=>{
+    res.status(200).json({message:"unlike comment route "})
+   }
+   exports.unlikeComment=async(req,res)=>{
+    const userId=req.body.user_id; 
+    const commentId=req.params.comment_id;
+    console.log(userId,commentId);
+    try{
+    const user=await User.findById(userId);
+    const comment=await Comment.findById(commentId);
+   
+    if(!comment){
+      res.status(404).json({message:"comment id not found"});
+    }
+    if(!comment.likes.includes(userId)){
+      res.status(500).json({message:"the comment is not liked yet"});
+    }
+     comment.likes.pull(user._id);
+     await comment.save();
+     res.status(200).json({message:"comment is unliked"});
+    
+    }
+     catch(err){
+               console.error(err);
+               res.status(500).json({message:"internal Server Error"});
+              }
+   }
+
+
+   exports.getAllComment=async(req,res)=>{
+    const postId=req.params.post_id;
+    try{
+        const post=await Post.findById(postId);
+        if(!post){
+            res.status(404).json({message:"post is not found"})
+        }
+        const comments=await Comment.find({post:postId});
+        res.status(200).json({message:"comment found",comments});
+    }
+    catch(err){
+        console.error(err);
+        res.status(500).json({message:"internal Server Error"});
+       }
+   }

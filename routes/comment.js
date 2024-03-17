@@ -15,7 +15,13 @@ router.put('/updateComment/:comment_id',isLogin,commentcontroller.upadateComment
 //router delete replies of comment
 router.delete('/deleteComment/:comment_id',isLogin,commentcontroller.deleteComment);
 
+//route to like a comment
+router.post('/likeComment/:comment_id',isLogin,commentcontroller.likeComment);
+
+//route to unlike a comment
+router.post('/unlikeComment/:comment_id',isLogin,commentcontroller.unlikeComment)
+
 // //router get all the comment of post
-// router.get('/allComment/:post_id',isLogin,getAllComment);
+router.get('/allComment/:post_id',isLogin,commentcontroller.getAllComment);
 
 module.exports=router;

@@ -9,6 +9,8 @@ const auth = require('./routes/auth');
 const user = require('./routes/user');
 const post = require('./routes/post');
 const comment=require('./routes/comment');
+const chat=require('./routes/chat');
+const messageing=require('./routes/messageing.js');
 
 const app = express();
 
@@ -20,6 +22,8 @@ async function startApolloServer() {
   app.use(user);
   app.use(post);
   app.use(comment);
+  app.use('/chat',chat);
+  app.use('/message',messageing)
   app.use(helmet());
 
   const server = new ApolloServer({

@@ -1,6 +1,4 @@
 .env
 node_modules
-model/chat.js
-model/message.js
 model/Story.js
 /node_modules/

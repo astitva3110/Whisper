@@ -1,19 +1,18 @@
-const express=require('express');
-const router=express.Router();
-const isLogin=require('../middleware/isLogin.js');
-const messageingcontroller=require('../controller/messageingcontroller.js');
+const express = require('express');
+const router = express.Router();
+const isLogin = require('../middleware/isLogin.js');
+const { messagingcontroller } = require('../controller/messagingcontroller.js');
 
+// Route to create a conversation
+router.post('/create', isLogin, messagingcontroller.createchat);
 
-//router post request to create a conversation
-router.post('/create',isLogin,messageingcontroller.createchat);
+// Route to get all messages
+router.get('/getMessage', isLogin, messagingcontroller.getAllMessage);
 
-//get request to get the message
-router.get('/getMessage',isLogin,messageingcontroller.getAllMessage);
+// Route to get the conversation between two users
+router.get('/getAll', isLogin, messagingcontroller.getAllMessageBetweenTwo);
 
-//get the converstion between two user
-router.get('/getAll',isLogin,messageingcontroller.getAllMessageBetweenTwo);
+// Route to delete a chat
+router.delete('/deleteChat', isLogin, messagingcontroller.deleteMessage);
 
-//delete the chat
-router.delete('/deleteChat',isLogin,messageingcontroller.deleteMessage)
-
-module.exports=router;
+module.exports = router;

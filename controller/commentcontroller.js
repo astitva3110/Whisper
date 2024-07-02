@@ -1,187 +1,207 @@
-const mongoose=require('mongoose');
-const User=require('../model/user');
-const Post=require('../model/Post');
-const Comment=require('../model/comment');
+const mongoose = require('mongoose');
+const User = require('../model/user');
+const Post = require('../model/Post');
+const Comment = require('../model/comment');
 
+// Add a comment to a post
+exports.addComment = async (req, res) => {
+    const postId = req.params.post_id;
+    const userId = req.user;
+    const { text } = req.body;
 
-exports.addcomment=async(req,res)=>{
-    const postId=req.params.post_id;
-    const {user_id,text}=req.body;
-    
-    try{
-        const post=await Post.findById(postId);
-        if(!post){
-            res.status(404).json({messsge:"Post is not available"});
+    try {
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
         }
-        const newcomment=new Comment({
-            user:user_id,
-            text:text,
-            post:postId
-        })
-        await newcomment.save();
-        res.status(200).json({messsge:"Comment is added",newcomment});
-    }
-    catch(err){
-        console.error(err);
-        res.status(500).json({message:"Internal Server Error"});
-       }
-    }
 
-exports.addReplies=async(req,res)=>{
-    const commentId=req.params.comment_id;
-    const {user_id,text}=req.body;
-    console.log(req.body)
-    try{
-        const comment=await Comment.findById(commentId)
-        const user=await User.findById(user_id);
-        console.log(comment,user)
-        if(!comment ||!user){
-            res.status(404).json({message:"NOT FOUND"});
-        }
-        const replie={
+        const newComment = new Comment({
+            user: userId.id,
             text,
-            user:user_id
+            post: postId
+        });
+
+        await newComment.save();
+        res.status(200).json({ message: "Comment added", newComment });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Add a reply to a comment
+exports.addReplies = async (req, res) => {
+    const commentId = req.params.comment_id;
+    const userId = req.user;
+    const { text } = req.body;
+
+    try {
+        const comment = await Comment.findById(commentId);
+        const user = await User.findById(userId.id);
+        if (!comment || !user) {
+            return res.status(404).json({ message: "Comment or user not found" });
         }
-        comment.replies.push(replie)
+
+        const reply = {
+            text,
+            user: userId.id
+        };
+
+        comment.replies.push(reply);
         await comment.save();
-        res.status(200).json({messsge:"Replies is added",replie});
-    }
-    catch(err){
+        res.status(200).json({ message: "Reply added", reply });
+    } catch (err) {
         console.error(err);
-        res.status(500).json({message:"Internal Server Error"});
-       }
-}
-
-
-exports.upadateComment=async(req,res)=>{
-    const commentId=req.params.comment_id;
-    const {user_id,text}=req.body;
-    try{
-       const user=await User.findById(user_id);
-       const comment=await Comment.findById(commentId);
-       if(!comment ||!user){
-        res.status(404).json({message:"NOT FOUND"});
-      }
-      const comment_user=comment.user;
-      if(user_id!=comment_user){
-        res.status(500).json({message:"You can't update comment that You don't own!"}); 
-      }
-      comment.text=text;
-      await comment.save();
-      res.status(200).json({message:"Comment is updated successfully"}); 
+        res.status(500).json({ message: "Internal Server Error" });
     }
-    catch(err){
-        console.error(err);
-        res.status(500).json({message:"Internal Server Error"});
-       }
-}
+};
 
-exports.updateRepiles=async(req,res)=>{
-    const commentId=req.params.comment_id;
-    const {user_id,text}=req.body;
-    try{
-        const user=await User.findById(user_id);
-        const comment=await Comment.findById(commentId);
-        
-        const replyIndex=comment.replies.findIndex((reply)=>reply._id.toString()===replyId)
-        if(replyIndex===-1){
-            throw new CustomError("Reply not found!",404)
+// Update a comment
+exports.updateComment = async (req, res) => {
+    const commentId = req.params.comment_id;
+    const userId = req.user;
+    const { text } = req.body;
+
+    try {
+        const user = await User.findById(userId.id);
+        const comment = await Comment.findById(commentId);
+        if (!comment || !user) {
+            return res.status(404).json({ message: "Comment or user not found" });
         }
 
-        if(comment.replies[replyIndex].user.toString()!==user_id){
-            throw new CustomError("You can only update your comments",404)
+        if (userId.id !== comment.user.toString()) {
+            return res.status(403).json({ message: "You can't update comments you don't own" });
         }
 
-        comment.replies[replyIndex].text=text
-
-        await comment.save()
-    }
-    catch(err){
+        comment.text = text;
+        await comment.save();
+        res.status(200).json({ message: "Comment updated successfully" });
+    } catch (err) {
         console.error(err);
-        res.status(500).json({message:"Internal Server Error"});
-       }
-}
-
-
-exports.deleteComment=async(req,res)=>{
-    const commentId=req.params.comment_id;
-    const userId=req.body.user_id;
-    const user=await User.findById(userId);
-       const comment=await Comment.findById(commentId);
-       if(!comment ||!user){
-        res.status(404).json({message:"NOT FOUND"});
-      }
-      const comment_user=comment.user;
-      if(user_id!=comment_user){
-        res.status(500).json({message:"You can't update comment that You don't own!"}); 
-      }
-     await comment.deleteOne();
-     res.status(200).json({message:"Comment deleted successfully!"});
-}
-
-exports.likeComment=async(req,res)=>{
-    const userId=req.body.user_id; 
-    const commentId=req.params.comment_id;
-    try{
-    const user=await User.findById(userId);
-    const comment=await Comment.findById(commentId);
-   
-  
-  
-    if(!comment){
-      res.status(404).json({message:"comment not found"});
+        res.status(500).json({ message: "Internal Server Error" });
     }
-     comment.likes.push(user._id);
-     await comment.save();
-     res.status(200).json({message:"Comment is liked"});
-    
-    }
-     catch(err){
-               console.error(err);
-               res.status(500).json({message:"internal Server Error"});
-              }
-   }
-   exports.getunlikeComment=async(req,res)=>{
-    res.status(200).json({message:"unlike comment route "})
-   }
-   exports.unlikeComment=async(req,res)=>{
-    const userId=req.body.user_id; 
-    const commentId=req.params.comment_id;
-    console.log(userId,commentId);
-    try{
-    const user=await User.findById(userId);
-    const comment=await Comment.findById(commentId);
-   
-    if(!comment){
-      res.status(404).json({message:"comment id not found"});
-    }
-    if(!comment.likes.includes(userId)){
-      res.status(500).json({message:"the comment is not liked yet"});
-    }
-     comment.likes.pull(user._id);
-     await comment.save();
-     res.status(200).json({message:"comment is unliked"});
-    
-    }
-     catch(err){
-               console.error(err);
-               res.status(500).json({message:"internal Server Error"});
-              }
-   }
+};
 
+// Update a reply to a comment
+exports.updateReplies = async (req, res) => {
+    const commentId = req.params.comment_id;
+    const userId = req.user;
+    const { text } = req.body;
+    const replyId = req.body.reply_id; // Assuming reply_id is passed in the body
 
-   exports.getAllComment=async(req,res)=>{
-    const postId=req.params.post_id;
-    try{
-        const post=await Post.findById(postId);
-        if(!post){
-            res.status(404).json({message:"post is not found"})
+    try {
+        const user = await User.findById(userId.id);
+        const comment = await Comment.findById(commentId);
+        if (!comment || !user) {
+            return res.status(404).json({ message: "Comment or user not found" });
         }
-        const comments=await Comment.find({post:postId});
-        res.status(200).json({message:"comment found",comments});
-    }
-    catch(err){
+
+        const replyIndex = comment.replies.findIndex(reply => reply._id.toString() === replyId);
+        if (replyIndex === -1) {
+            return res.status(404).json({ message: "Reply not found" });
+        }
+
+        if (comment.replies[replyIndex].user.toString() !== userId.id) {
+            return res.status(403).json({ message: "You can only update your replies" });
+        }
+
+        comment.replies[replyIndex].text = text;
+        await comment.save();
+        res.status(200).json({ message: "Reply updated successfully" });
+    } catch (err) {
         console.error(err);
-        res.status(500).json({message:"internal Server Error"});
-       }
-   }
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Delete a comment
+exports.deleteComment = async (req, res) => {
+    const commentId = req.params.comment_id;
+    const userId = req.user;
+
+    try {
+        const user = await User.findById(userId.id);
+        const comment = await Comment.findById(commentId);
+        if (!comment || !user) {
+            return res.status(404).json({ message: "Comment or user not found" });
+        }
+
+        if (userId.id !== comment.user.toString()) {
+            return res.status(403).json({ message: "You can't delete comments you don't own" });
+        }
+
+        await comment.deleteOne();
+        res.status(200).json({ message: "Comment deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Like a comment
+exports.likeComment = async (req, res) => {
+    const userId = req.user; 
+    const commentId = req.params.comment_id;
+
+    try {
+        const user = await User.findById(userId.id);
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        if (comment.likes.includes(user._id)) {
+            return res.status(400).json({ message: "Comment already liked" });
+        }
+
+        comment.likes.push(user._id);
+        await comment.save();
+        res.status(200).json({ message: "Comment liked" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Unlike a comment
+exports.unlikeComment = async (req, res) => {
+    const userId = req.user; 
+    const commentId = req.params.comment_id;
+
+    try {
+        const user = await User.findById(userId.id);
+        const comment = await Comment.findById(commentId);
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        if (!comment.likes.includes(user._id)) {
+            return res.status(400).json({ message: "Comment not liked yet" });
+        }
+
+        comment.likes.pull(user._id);
+        await comment.save();
+        res.status(200).json({ message: "Comment unliked" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Get all comments for a post
+exports.getAllComments = async (req, res) => {
+    const postId = req.params.post_id;
+
+    try {
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        const comments = await Comment.find({ post: postId });
+        res.status(200).json({ message: "Comments found", comments });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};

@@ -3,106 +3,106 @@ const User = require('../model/user');
 const Post = require('../model/Post');
 const connectdb = require('../util/database');
 require('dotenv').config();
-connectdb()
+connectdb();
 
-
-//Create the post for a user 
-
-exports.postPOST=async(req,res)=>{
-  const {text}=req.body
-  const user_id=req.params.user_id; 
-  try{
-    const user =await User.findById(user_id);
-    if (!user){
-     res.status(404).json({message:"user not found"});
-    }
-     const newPost=new Post({
-        name:user_id,
-        text
-     })
-    await newPost.save();
-     user.post.push(newPost._id);
-     await user.save();
-     res.status(200).json(newPost);
-     
-  }
- catch(err){
-            console.error(err);
-            res.status(500).json({message:"Internal Server Error"});
-           }
+// Create a post for a user
+exports.postPOST = async (req, res) => {
+    const { text } = req.body;
+    const user_id = req.user; 
+    try {
+        // Fetch the user info
+        const user = await User.findById(user_id.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
-
-
-  //get the all the post of users which is following by the user
-
-    exports.getAllPost=async(req,res)=>{
-       const userId=req.params.user_id;
-       try{
-        const user=await User.findById(userId);
-
-        if(!user){
-         res.status(404).json({message:"user is not found"});
-        }
-        const postsfromUser= await Post.find({ name: { $in: user.followers } })
-       .sort({ createdAt: -1 })
-       .populate('name', 'name');
         
-       if(!postsfromUser){
-         res.status(404).json({message:"NO post is available"});
-       }
-       res.status(200).json(postsfromUser.text);
-       }
-       catch(err){
+        // Create the post
+        const newPost = new Post({
+            name: user_id.id,
+            text
+        });
+
+        // Save the post
+        await newPost.save();
+        user.post.push(newPost._id);
+        await user.save();
+        res.status(200).json(newPost);
+    } catch (err) {
         console.error(err);
-        res.status(500).json({message:"Internal Server Error"});
-       }
+        res.status(500).json({ message: "Internal Server Error" });
     }
+};
 
-    exports.likePost=async(req,res)=>{
-      const userId=req.body.user_id; 
-      const postId=req.params.post_id;
-      try{
-      const user=await User.findById(userId);
-      const post=await Post.findById(postId);
-     
-    
-    
-      if(!post){
-        res.status(404).json({message:"Post id not found"});
-      }
-       post.likes.push(user._id);
-       await post.save();
-       res.status(200).json({message:"post is liked"});
-      
-      }
-       catch(err){
-                 console.error(err);
-                 res.status(500).json({message:"internal Server Error"});
-                }
-     }
+// Get all the posts of users followed by the current user
+exports.getAllPost = async (req, res) => {
+    const userId = req.user;
+    try {
+        // Fetch the user info
+        const user = await User.findById(userId.id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-     exports.unlikePost=async(req,res)=>{
-      const userId=req.body.user_id; 
-      const postId=req.params.post_id;
-      try{
-      const user=await User.findById(userId);
-      const post=await Post.findById(postId);
-     
-    
-    
-      if(!post){
-        res.status(404).json({message:"Post id not found"});
-      }
-      if(!post.likes.includes(userId)){
-        res.status(500).json({message:"the is not liked"});
-      }
-       post.likes.pull(post._id);
-       await user.save();
-       res.status(200).json({message:"post  is unliked"});
-      
-      }
-       catch(err){
-                 console.error(err);
-                 res.status(500).json({message:"internal Server Error"});
-                }
-     }
+        // Fetch posts from users followed by the current user
+        const postsFromUser = await Post.find({ name: { $in: user.following } })
+            .sort({ createdAt: -1 })
+            .populate('name', 'name');
+
+        if (!postsFromUser) {
+            return res.status(404).json({ message: "No posts available" });
+        }
+
+        res.status(200).json(postsFromUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Like a post
+exports.likePost = async (req, res) => {
+    const userId = req.user; 
+    const postId = req.params.post_id;
+    try {
+        // Fetch the user and post info
+        const user = await User.findById(userId.id);
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        post.likes.push(user._id);
+        await post.save();
+        res.status(200).json({ message: "Post liked" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// Unlike a post
+exports.unlikePost = async (req, res) => {
+    const userId = req.user; 
+    const postId = req.params.post_id;
+    try {
+        // Fetch the user and post info
+        const user = await User.findById(userId.id);
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        if (!post.likes.includes(userId.id)) {
+            return res.status(500).json({ message: "Post is not liked" });
+        }
+
+        post.likes.pull(userId.id);
+        await post.save();
+        res.status(200).json({ message: "Post unliked" });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};

@@ -13,7 +13,7 @@
   "dependencies": {
     "@apollo/server": "^4.10.1",
     "apollo-server-express": "^3.13.0",
-    "bcrypt": "^5.1.1",
+    "bcrypt": "^6.0.0",
     "cloudinary": "^2.0.3",
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
@@ -27,6 +27,6 @@
     "nodemon": "^3.1.0",
     "random-username-generator": "^1.0.4",
     "unique-names-generator": "^4.7.1",
-    "vercel": "^33.6.1"
+    "vercel": "^39.2.5"
   }
 }
